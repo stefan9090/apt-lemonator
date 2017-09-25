@@ -5,6 +5,12 @@
 #include "pybind11/pybind11.h"
 #pragma GCC diagnostic pop
 
+#include <stdio.h>
+void test_func()
+{
+    printf("Test!!!!!!!!!!\n");
+}
+
 namespace py = pybind11;
 
 PYBIND11_MODULE( lemonator, m ) {
@@ -21,4 +27,6 @@ PYBIND11_MODULE( lemonator, m ) {
    py::class_< lemonator_proxy >( m, "lemonator" )
       .def( py::init< int >() )
       .def_readonly( "led_yellow", &lemonator_proxy::p_led_yellow );
+
+   m.def("test_func", &test_func);
 }
