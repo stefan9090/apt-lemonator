@@ -1,0 +1,9 @@
+[submodule "pybind11"]
+	path = pybind11
+	url = https://github.com/pybind/pybind11.git
+[submodule "vkatp-lemonator"]
+	path = vkatp-lemonator
+	url = https://github.com/wovo/vkatp-lemonator.git
+[submodule "hwlib"]
+	path = hwlib
+	url = https://github.com/wovo/hwlib.git
