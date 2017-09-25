@@ -1,4 +1,4 @@
-#include "lemonator_proxy.hpp"
+#include "lemonator_dummy.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -20,13 +20,13 @@ PYBIND11_MODULE( lemonator, m ) {
       .value( "buffered", hwlib::buffering::buffered )
       .export_values();
 
-   py::class_< output_proxy >( m, "output_proxy" )
-      .def( "set", &output_proxy::set, "",
+   py::class_< output_dummy >( m, "output_dummy" )
+      .def( "set", &output_dummy::set, "",
          py::arg("v"), py::arg("buffering") = hwlib::buffering::unbuffered );
 
-   py::class_< lemonator_proxy >( m, "lemonator" )
+   py::class_< lemonator_dummy >( m, "lemonator" )
       .def( py::init< int >() )
-      .def_readonly( "led_yellow", &lemonator_proxy::p_led_yellow );
+      .def_readonly( "led_yellow", &lemonator_dummy::d_led_yellow );
 
    m.def("test_func", &test_func);
 }
