@@ -132,6 +132,8 @@ class simulator_gui(object):
 
         self.draw_led(70, 100, (255, 0, 0), self.simulator.sirup_pump_state)
         self.draw_led(130, 100, (255, 0, 0), self.simulator.water_pump_state)
+        self.draw_led(70, 130, (255, 0, 0), self.simulator.sirup_valve_state)
+        self.draw_led(130, 130, (255, 0, 0), self.simulator.water_valve_state)
 
         self.draw_keypad(330, 110)
         self.draw_toggle_switch(10, 200)

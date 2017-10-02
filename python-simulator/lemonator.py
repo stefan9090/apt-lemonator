@@ -36,5 +36,7 @@ class lemonator(object):
         self.heater = output_dummy(self.simulator.set_heater, self.simulator, self.gui)
         self.sirup_pump = output_dummy(self.simulator.set_sirup, self.simulator, self.gui)
         self.water_pump = output_dummy(self.simulator.set_water, self.simulator, self.gui)
+        self.sirup_valve = output_dummy(self.simulator.set_sirup_valve, self.simulator, self.gui)
+        self.water_valve = output_dummy(self.simulator.set_water_valve, self.simulator, self.gui)
 
         self.keypad = sensor_dummy(self.gui.get_keypad, self.simulator, self.gui)
