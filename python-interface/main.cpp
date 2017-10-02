@@ -51,6 +51,7 @@ PYBIND11_MODULE( lemonator, m ) {
        .def_readonly("sirup_pump", &lemonator_dummy::d_sirup_pump)
        .def_readonly("sirup_valve", &lemonator_dummy::d_sirup_valve)
        .def_readonly("water_pump", &lemonator_dummy::d_water_pump)
+	   .def_readonly("water_valve", &lemonator_dummy::d_water_valve)
        .def_readonly("led_yellow", &lemonator_dummy::d_led_yellow)
        .def_readonly("led_green", &lemonator_dummy::d_led_green);
 }
