@@ -1,5 +1,15 @@
 import time
+import math
+import lemonator
+import time
+from unittest import *
+import io
 
+"""
+
+392 = pi * (5)
+
+"""
 class simulator:
     def __init__(self):
         self.last_time = time.time()
@@ -11,6 +21,10 @@ class simulator:
         self.target_temp = 30
 
         self.liquid_level = 0
+        self.mix_vessel_height_cm = 5
+        self.mix_vessel_radius_cm = 5
+        self.mix_vessel_max_level = math.pi * (self.mix_vessel_radius_cm**2) * self.mix_vessel_height_cm
+        self.height_sensor_cm = 10
 
         self.sirup_pump_state = False
         self.sirup_pump_running = False
@@ -81,6 +95,9 @@ class simulator:
         elif self.heater_state == True and self.temp<100:
             self.temp += 2 * dt
 
+    def read_mm(self):
+        return self.height_sensor_cm - (self.liquid_level/(math.pi * (self.mix_vessel_radius_cm**2)))*10
+
     def handle_liquids(self, dt):
         sirup_stream = 0
         if self.sirup_pump_state == True and self.sirup_valve_state == False:
@@ -138,16 +155,22 @@ class simulator:
 
         self.liquid_level += sirup_stream + water_stream
 
-
+    def log(self):
+        print("====Log====")
+        print("ml liquid_level: %5f" % (self.liquid_level,))
+        print("mm distance to liquid: %5f" % (self.read_mm(),))
+        print("mm liquid in mix vessel: %5f" % (10 - self.read_mm(),))
+        print("===========")
+        
     def update(self):
         current_time = time.time()
         dt = current_time - self.last_time
         self.last_time = current_time
         self.handle_heater(dt)
         self.handle_liquids(dt)
-
+       
 if __name__=="__main__":
-    sim = simumlator_interface(lemon)
+    sim = simulator()
 
     sim.heater_on()
 
@@ -157,14 +180,10 @@ if __name__=="__main__":
     sim.sirup_pump_on()
     sim.water_pump_on()
 
-    val = True
-
     while(True):
         sim.update()
-        print("%5f" % (sim.liquid_level,))
         current_time = time.time()
-        if(current_time - last_time)>10 and val:
-            val = False
-            print('Going False!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-            sim.sirup_pump_off()
+        if(current_time - last_time)>1:
+            sim.log()
+            last_time = current_time
         time.sleep(0.1)
