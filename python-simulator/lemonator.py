@@ -9,8 +9,6 @@ class output_dummy(object):
 
     def set(self, value):
         self.func(value)
-        self.simulator.update()
-        self.gui.update()
 
 class sensor_dummy(object):
     def __init__(self, func, simulator, gui):

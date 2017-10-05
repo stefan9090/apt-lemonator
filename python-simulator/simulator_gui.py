@@ -1,7 +1,22 @@
 import sys
+import os
 import time
 import pygame
 from pygame.locals import *
+
+import threading
+
+class simulator_thread(threading.Thread):
+    def __init__(self, threadID, name, simulator):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.simulator = simulator
+
+    def run(self):
+        while True:
+            self.simulator.simulator.update()
+            self.simulator.update()
 
 class simulator_gui(object):
     def __init__(self, simulator):
@@ -26,6 +41,9 @@ class simulator_gui(object):
 
         self.key = None
 
+        self.thread = simulator_thread(1, "simulator-thread", self)
+        self.thread.start()
+
     def set_yellow_led(self, value):
         self.leds["yellow"] = value
 
@@ -35,8 +53,7 @@ class simulator_gui(object):
     def get_keypad(self):
         while self.key == None:
             time.sleep(0.02)
-            self.simulator.update()
-            self.update()
+
         key = self.key
         self.key = None
         return key
@@ -111,7 +128,7 @@ class simulator_gui(object):
 
     def update(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit(0)
+            if event.type == pygame.QUIT: os._exit(0)
             elif event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
                 self.handle_keypad(330, 110, pos)
