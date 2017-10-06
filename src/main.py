@@ -11,10 +11,10 @@ def keep_temp(d, temp):
     while timer < d:
         timer += 0.2
         time.sleep(0.2)
-        if not heater and hw.read_mc.get() < temp - 0.5:
+        if not heater and hw.temperature.read_mc() < temp - 0.5:
             heater = True
             hw.heater.set(1)
-        elif heater and hw.read_mc.get() > temp + 0.5:
+        elif heater and hw.temperature.read_mc() > temp + 0.5:
             heater = False
             hw.heater.set(0)
 

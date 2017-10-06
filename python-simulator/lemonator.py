@@ -18,6 +18,15 @@ class sensor_dummy(object):
     def getc(self):
         return self.func()
 
+    def read_mm(self):
+        return self.func()
+
+    def read_rgb(self):
+        return self.func()
+
+    def read_mc(self):
+        return self.func()
+
 class lemonator(object):
     def __init__(self, port):
         self.port = port
@@ -35,5 +44,6 @@ class lemonator(object):
 
         self.keypad = sensor_dummy(self.gui.get_keypad)
         self.get = sensor_dummy(self.simulator.get_cup)
-        self.read_mc = sensor_dummy(self.simulator.read_temp)
-        self.read_mm = sensor_dummy(self.simulator.read_mm)
+        self.temperature = sensor_dummy(self.simulator.read_temp)
+        self.distance = sensor_dummy(self.simulator.read_mm)
+
