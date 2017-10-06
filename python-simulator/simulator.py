@@ -38,6 +38,9 @@ class simulator:
     def heater_off(self):
         self.heater_state = False
 
+    def get_cup(self):
+        return self.cup_present
+
     def set_heater(self, value):
         self.heater_state = value
 
@@ -154,14 +157,14 @@ class simulator:
         print("ml liquid_level: %5f" % (self.liquid_level,))
         print("mm distance to liquid: %5f" % (self.read_mm(),))
         print("mm liquid in mix vessel: %5f\n" % (100 - self.read_mm(),))
-        
+
     def update(self):
         current_time = time.time()
         dt = current_time - self.last_time
         self.last_time = current_time
         self.handle_heater(dt)
         self.handle_liquids(dt)
-       
+
 if __name__=="__main__":
     sim = simulator()
 
@@ -171,7 +174,7 @@ if __name__=="__main__":
     sim.sirup_pump_on()
     sim.water_pump_on()
     sim.heater_on()
-    
+
     while(True):
         sim.update()
         current_time = time.time()
@@ -179,6 +182,3 @@ if __name__=="__main__":
             sim.log()
             last_time = current_time
         time.sleep(0.1)
-
-
-    
