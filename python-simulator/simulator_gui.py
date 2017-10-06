@@ -157,6 +157,6 @@ class simulator_gui(object):
 
         self.draw_lcd(260, 10)
 
-        self.screen.blit(self.font.render("%3.2f cm" % (self.simulator.read_mm(),), 1, (0, 0, 0)), (180, 180))
+        self.screen.blit(self.font.render("%3.2f mm" % (self.simulator.read_mm(),), 1, (0, 0, 0)), (180, 180))
 
         pygame.display.flip()

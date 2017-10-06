@@ -5,11 +5,6 @@ import time
 from unittest import *
 import io
 
-"""
-
-392 = pi * (5)
-
-"""
 class simulator:
     def __init__(self):
         self.last_time = time.time()
@@ -96,7 +91,7 @@ class simulator:
             self.temp += 2 * dt
 
     def read_mm(self):
-        return self.height_sensor_cm - (self.liquid_level/(math.pi * (self.mix_vessel_radius_cm**2)))*10
+        return (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
 
     def handle_liquids(self, dt):
         sirup_stream = 0
@@ -152,15 +147,13 @@ class simulator:
                 else:
                     water_stream = 1 * dt
 
-
         self.liquid_level += sirup_stream + water_stream
 
     def log(self):
         print("====Log====")
         print("ml liquid_level: %5f" % (self.liquid_level,))
         print("mm distance to liquid: %5f" % (self.read_mm(),))
-        print("mm liquid in mix vessel: %5f" % (10 - self.read_mm(),))
-        print("===========")
+        print("mm liquid in mix vessel: %5f\n" % (100 - self.read_mm(),))
         
     def update(self):
         current_time = time.time()
@@ -172,14 +165,13 @@ class simulator:
 if __name__=="__main__":
     sim = simulator()
 
-    sim.heater_on()
-
     delay_time = 0.013
     last_time = time.time()
 
     sim.sirup_pump_on()
     sim.water_pump_on()
-
+    sim.heater_on()
+    
     while(True):
         sim.update()
         current_time = time.time()
@@ -187,3 +179,6 @@ if __name__=="__main__":
             sim.log()
             last_time = current_time
         time.sleep(0.1)
+
+
+    
