@@ -97,7 +97,7 @@ class simulator:
         return self.temp_mc
 
     def handle_temperature(self, dt):
-        if self.heater_state == False and self.temp_mc>21000:
+        if self.heater_state == False and self.temp_mc>20000:
             self.temp_mc -= 1 * self.multiplier * dt
         elif self.heater_state == True and self.temp_mc<100000:
             self.temp_mc += 10 * self.multiplier * dt
