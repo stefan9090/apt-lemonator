@@ -74,7 +74,7 @@ class simulator_gui(object):
         else:
             pygame.draw.rect(self.screen, (60, 60, 60), (x, y, 60, 10))
 
-        self.screen.blit(self.font.render("%3.1f C" % (self.simulator.temp,), 1, (0, 0, 0)), (x, y + 10))
+        self.screen.blit(self.font.render("%3.1f mC" % (self.simulator.read_real_temp(),), 1, (0, 0, 0)), (x, y + 10))
 
     def draw_keypad(self, x, y):
         for i in range(len(self.buttons)):
@@ -140,7 +140,7 @@ class simulator_gui(object):
         self.draw_tank(160, 10, (122, 255, 245), 100)
 
         if self.simulator.cup_present:
-            self.draw_tank(80, 200, (255, 0, 255), self.simulator.liquid_level)
+            self.draw_tank(80, 200, (255, 0, 255), (89 - self.simulator.read_real_mm()) * 2)
 
         self.draw_heater(75, 360)
 
@@ -157,6 +157,6 @@ class simulator_gui(object):
 
         self.draw_lcd(260, 10)
 
-        self.screen.blit(self.font.render("%3.2f mm" % (self.simulator.read_mm(),), 1, (0, 0, 0)), (180, 180))
+        self.screen.blit(self.font.render("%3.2f mm" % (self.simulator.read_real_mm(),), 1, (0, 0, 0)), (180, 180))
 
         pygame.display.flip()

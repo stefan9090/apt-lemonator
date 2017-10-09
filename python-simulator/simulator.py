@@ -6,7 +6,6 @@ from unittest import *
 import io
 from random import randint
 
-
 class simulator:
     def __init__(self):
         self.last_time = time.time()
@@ -24,7 +23,7 @@ class simulator:
         self.mix_vessel_height_cm = 5
         self.mix_vessel_radius_cm = 5
         self.mix_vessel_max_level = math.pi * (self.mix_vessel_radius_cm**2) * self.mix_vessel_height_cm
-        self.height_sensor_cm = 10
+        self.height_sensor_cm = 8.9
 
         self.sirup_pump_state = False
         self.sirup_pump_running = False
@@ -36,6 +35,8 @@ class simulator:
         self.water_rampdown = False
 
         self.cup_present = True
+
+        self.multiplier = 5
 
     def heater_on(self):
         self.heater_state = True
@@ -94,12 +95,12 @@ class simulator:
 
     def read_real_temp(self):
         return self.temp_mc
-    
+
     def handle_temperature(self, dt):
         if self.heater_state == False and self.temp_mc>21000:
-            self.temp_mc -= 1 * dt
+            self.temp_mc -= 1 * self.multiplier * dt
         elif self.heater_state == True and self.temp_mc<100000:
-            self.temp_mc += 10 * dt
+            self.temp_mc += 10 * self.multiplier * dt
 
     def read_mm(self):
         mm = (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
@@ -107,59 +108,51 @@ class simulator:
             mm += randint(5, 30)
         return mm
 
+    def read_real_mm(self):
+        mm = (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
+        return mm
+
     def handle_liquids(self, dt):
         sirup_stream = 0
         if self.sirup_pump_state == True and self.sirup_valve_state == False:
             if (time.time() - self.sirup_pump_time)>3:
-                sirup_stream = 1 * dt
+                sirup_stream = 1 * self.multiplier * dt
                 self.sirup_pump_running = True
         elif self.sirup_pump_state == False and self.sirup_pump_running == True:
             if self.sirup_valve_state == True:
+                sirup_stream = 0
+                self.sirup_pump_running = False
+            else:
                 if (time.time() - self.sirup_pump_time)>20:
                     sirup_stream = 0
                     self.sirup_pump_running = False
                 else:
-                    sirup_stream = 1 * dt
-            else:
-                if (time.time() - self.sirup_pump_time)>40:
-                    sirup_stream = 0
-                    self.sirup_pump_running = False
-                else:
-                    sirup_stream = 1 * dt
+                    sirup_stream = 1 * self.multiplier * dt
         else:
             if self.sirup_pump_running:
-                if (time.time() - self.sirup_pump_time)>20:
-                    sirup_stream = 0
-                    self.sirup_pump_running = False
-                else:
-                    sirup_stream = 1 * dt
+                sirup_stream = 0
+                self.sirup_pump_running = False
 
 
         water_stream = 0
         if self.water_pump_state == True and self.water_valve_state == False:
             if (time.time() - self.water_pump_time)>3:
-                water_stream = 1 * dt
+                water_stream = 1 * self.multiplier * dt
                 self.water_pump_running = True
         elif self.water_pump_state == False and self.water_pump_running == True:
             if self.water_valve_state == True:
+                water_stream = 0
+                self.water_pump_running = False
+            else:
                 if (time.time() - self.water_pump_time)>20:
                     water_stream = 0
                     self.water_pump_running = False
                 else:
-                    water_stream = 1 * dt
-            else:
-                if (time.time() - self.water_pump_time)>40:
-                    water_stream = 0
-                    self.water_pump_running = False
-                else:
-                    water_stream = 1 * dt
+                    water_stream = 1 * self.multiplier * dt
         else:
             if self.water_pump_running:
-                if (time.time() - self.water_pump_time)>20:
-                    water_stream = 0
-                    self.water_pump_running = False
-                else:
-                    water_stream = 1 * dt
+                water_stream = 0
+                self.water_pump_running = False
 
         self.liquid_level += sirup_stream + water_stream
 
@@ -172,7 +165,7 @@ class simulator:
         print("real temperature in mc: %5f" % (self.read_real_temp(),))
         print("water: pump = " + str(self.water_pump_state) + ", valve = " + str(self.water_valve_state))
         print("sirup: pump = " + str(self.sirup_pump_state) + ", valve = " + str(self.sirup_valve_state))
-        
+
     def update(self):
         current_time = time.time()
         dt = current_time - self.last_time
