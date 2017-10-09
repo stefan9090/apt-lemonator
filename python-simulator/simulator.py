@@ -4,6 +4,8 @@ import lemonator
 import time
 from unittest import *
 import io
+from random import randint
+
 
 class simulator:
     def __init__(self):
@@ -12,8 +14,8 @@ class simulator:
         self.water_pump_time = 0
 
         self.heater_state = False
-        self.temp = 20
-        self.target_temp = 30
+        self.temp_mc = 20000
+        self.target_temp = 30000
 
         self.liquid_level = 0
         self.mix_vessel_height_cm = 5
@@ -83,18 +85,24 @@ class simulator:
         self.water_valve_state = value
 
     def read_temp(self):
-        if self.temp>70:
-            return 70
-        return self.temp
+        if self.temp_mc>70000:
+            return 70000 - 700 #sensor offset
+        return self.temp_mc - 700 #sensor offset
 
+    def read_real_temp(self):
+        return self.temp_mc
+    
     def handle_heater(self, dt):
-        if self.heater_state == False and self.temp>21:
-            self.temp -= 1 * dt
-        elif self.heater_state == True and self.temp<100:
-            self.temp += 2 * dt
+        if self.heater_state == False and self.temp_mc>21000:
+            self.temp_mc -= 1 * dt
+        elif self.heater_state == True and self.temp_mc<100000:
+            self.temp_mc += 10 * dt
 
     def read_mm(self):
-        return (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
+        mm = (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
+        if randint(0, 9) == 1:
+            mm += randint(5, 30)
+        return mm
 
     def handle_liquids(self, dt):
         sirup_stream = 0
@@ -153,11 +161,15 @@ class simulator:
         self.liquid_level += sirup_stream + water_stream
 
     def log(self):
-        print("====Log====")
-        print("ml liquid_level: %5f" % (self.liquid_level,))
-        print("mm distance to liquid: %5f" % (self.read_mm(),))
-        print("mm liquid in mix vessel: %5f\n" % (100 - self.read_mm(),))
-
+        print("\n====Log====")
+        print("liquid_level in ml: %5f" % (self.liquid_level,))
+        print("distance to liquid in mm: %5f" % (self.read_mm(),))
+        print("liquid in mix vessel in mm: %5f" % (100 - self.read_mm(),))
+        print("sensor temperature in mc: %5f" % (self.read_temp(),))
+        print("real temperature in mc: %5f" % (self.read_real_temp(),))
+        print("water: pump = " + str(self.water_pump_state) + ", valve = " + str(self.water_valve_state))
+        print("sirup: pump = " + str(self.sirup_pump_state) + ", valve = " + str(self.sirup_valve_state))
+        
     def update(self):
         current_time = time.time()
         dt = current_time - self.last_time
