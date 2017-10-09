@@ -122,9 +122,9 @@ class simulator_gui(object):
     def handle_toggle_switch(self, x, y, pos):
         mx, my = pos
         if mx >= x and mx <= x + 60 and my >= y and my <= y + 20:
-            self.simulator.cup_present = not self.simulator.cup_present
-            if not self.simulator.cup_present:
-                self.simulator.liquid_level = 0
+            self.simulator.set_cup(not self.simulator.get_cup())
+            if not self.simulator.get_cup():
+                self.simulator.set_liquids_level(0)
 
     def update(self):
         for event in pygame.event.get():
