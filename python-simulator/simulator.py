@@ -43,52 +43,52 @@ class simulator:
         self.cup_present = True
 
         self.multiplier = 5
-        
+
     #get the current cup_present value false if not pressent true otherwise
     def get_cup(self):
         return self.cup_present
-        
-    #set whether the cup_present is pressent or not    
+
+    #set whether the cup_present is pressent or not
     def set_cup(self,value):
-        return self.cup_present
-        
+        self.cup_present = value
+
     #set te current liquid_level in the cup
     def set_liquids_level(self, value):
         self.liquid_level = 0
-        
-    #turns the heater on or of depending on the bool value given    
+
+    #turns the heater on or of depending on the bool value given
     def set_heater(self, value):
         self.heater_state = value
-        
+
     #turns the sirup pump on only if the cup is pressent and pump not on already
     def sirup_pump_on(self):
         if self.cup_present == True and not self.sirup_pump_state:
             self.sirup_pump_time = time.time()
             self.sirup_pump_state = True
 
-    #turns the sirup pump off        
+    #turns the sirup pump off
     def sirup_pump_off(self):
         self.sirup_pump_time = time.time()
         self.sirup_pump_state = False
-        
-    #turns the sirup pump on or of depending on the bool value given    
+
+    #turns the sirup pump on or of depending on the bool value given
     def set_sirup(self, value):
         if value:
             self.sirup_pump_on()
         else:
             self.sirup_pump_off()
-    
+
     #turns the sirup pump valve on or of depending on the bool value given
     def set_sirup_valve(self, value):
         self.sirup_pump_time = time.time()
         self.sirup_valve_state = value
-    
+
     #turns the water pump on only if the cup is pressent and pump not on already
     def water_pump_on(self):
         if self.cup_present == True and not self.water_pump_state:
             self.water_pump_time = time.time()
             self.water_pump_state = True
-    
+
     #turns water pump off
     def water_pump_off(self):
         self.water_pump_time = time.time()
@@ -105,7 +105,7 @@ class simulator:
     def set_water_valve(self, value):
         self.water_pump_time = time.time()
         self.water_valve_state = value
-    
+
     #returns the last cashed value of the heater only updates ones every 800ms
     def read_temp(self):
         if self.delayed_temp_mc>70000:
@@ -115,26 +115,26 @@ class simulator:
     #the actual temp value the function ignores the 800ms read out delay
     def read_real_temp(self):
         return self.temp_mc
-    
+
     #simulates the temperature if heater on temp up temp down if heater off
     def handle_temperature(self, dt):
         if self.heater_state == False and self.temp_mc>20000:
             self.temp_mc -= 1 * self.multiplier * dt
         elif self.heater_state == True and self.temp_mc<100000:
             self.temp_mc += 10 * self.multiplier * dt
-            
+
     #simulates the height sensor includes the random miss read values
     def read_mm(self):
         mm = (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
         if randint(0, 9) == 1:
             mm += randint(5, 30)
         return mm
-        
-    #returns the accurate value of the height sensor 
+
+    #returns the accurate value of the height sensor
     def read_real_mm(self):
         mm = (self.height_sensor_cm - self.liquid_level / (math.pi * self.mix_vessel_radius_cm**2))*10
         return mm
-        
+
     #simulates the liquid pumps
     def handle_liquids(self, dt):
         sirup_stream = 0
@@ -180,7 +180,7 @@ class simulator:
 
         self.liquid_level += sirup_stream + water_stream
 
-    #gives clear debug values 
+    #gives clear debug values
     def log(self):
         print("\n====Log====")
         print("liquid_level in ml: %5f" % (self.liquid_level,))
@@ -201,8 +201,8 @@ class simulator:
         if (current_time - self.temp_delay_timer) > self.temp_delay_ms:
             self.delayed_temp_mc = self.temp_mc
             self.temp_delay_timer = current_time
-            
-#only for debug purpuse 
+
+#only for debug purpuse
 if __name__=="__main__":
     sim = simulator()
 
