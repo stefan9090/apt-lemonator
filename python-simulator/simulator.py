@@ -15,7 +15,10 @@ class simulator:
 
         self.heater_state = False
         self.temp_mc = 20000
+        self.delayed_temp_mc = 0
         self.target_temp = 30000
+        self.temp_delay_ms = 0.8
+        self.temp_delay_timer = 0
 
         self.liquid_level = 0
         self.mix_vessel_height_cm = 5
@@ -85,14 +88,14 @@ class simulator:
         self.water_valve_state = value
 
     def read_temp(self):
-        if self.temp_mc>70000:
+        if self.delayed_temp_mc>70000:
             return 70000 - 700 #sensor offset
-        return self.temp_mc - 700 #sensor offset
+        return self.delayed_temp_mc - 700 #sensor offset
 
     def read_real_temp(self):
         return self.temp_mc
     
-    def handle_heater(self, dt):
+    def handle_temperature(self, dt):
         if self.heater_state == False and self.temp_mc>21000:
             self.temp_mc -= 1 * dt
         elif self.heater_state == True and self.temp_mc<100000:
@@ -174,8 +177,11 @@ class simulator:
         current_time = time.time()
         dt = current_time - self.last_time
         self.last_time = current_time
-        self.handle_heater(dt)
+        self.handle_temperature(dt)
         self.handle_liquids(dt)
+        if (current_time - self.temp_delay_timer) > self.temp_delay_ms:
+            self.delayed_temp_mc = self.temp_mc
+            self.temp_delay_timer = current_time
 
 if __name__=="__main__":
     sim = simulator()
@@ -190,7 +196,7 @@ if __name__=="__main__":
     while(True):
         sim.update()
         current_time = time.time()
-        if(current_time - last_time)>1:
-            sim.log()
-            last_time = current_time
+        #if(current_time - last_time)>1:
+        sim.log()
+        #    last_time = current_time
         time.sleep(0.1)
