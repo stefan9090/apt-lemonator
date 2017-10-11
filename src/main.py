@@ -22,7 +22,7 @@ def keep_temp(d, temp):
             hw.heater.set(0)
 
 def calculate_sirup_level(sirup_value, water_value):
-    return empty_cup - (empty_cup - full_cup) * (sirup_value / (sirup_value + water_value)) * sirup_value * 2
+    return empty_cup - (empty_cup - full_cup) * (1 / (sirup_value + water_value)) * sirup_value * 2
 
 def fill_cup(sirup_value, water_value):
     global heater
@@ -33,18 +33,28 @@ def fill_cup(sirup_value, water_value):
     hw.water_valve.set(0)
 
     sirup_level = calculate_sirup_level(sirup_value, water_value)
+    if sirup_value > water_value:
+        sirup_level = calculate_sirup_level(water_value, sirup_value)
 
     while hw.distance.read_mm() > sirup_level:
         keep_temp(0.2, 22000)
 
-    hw.sirup_pump.set(0)
-    hw.sirup_valve.set(1)
+    if sirup_value < water_value:
+        hw.sirup_pump.set(0)
+        hw.sirup_valve.set(1)
+    else:
+        hw.water_pump.set(0)
+        hw.water_valve.set(1)
 
     while hw.distance.read_mm() > full_cup:
         keep_temp(0.2, 22000)
 
-    hw.water_pump.set(0)
-    hw.water_valve.set(1)
+    if sirup_value < water_value:
+        hw.water_pump.set(0)
+        hw.water_valve.set(1)
+    else:
+        hw.sirup_pump.set(0)
+        hw.sirup_valve.set(1)
 
     hw.heater.set(0)
     heater = False
@@ -60,3 +70,5 @@ if __name__=="__main__":
             fill_cup(1, 20)
         if keypad_input == 'D':
             fill_cup(1, 3)
+        if keypad_input == '*':
+            fill_cup(3, 1)
