@@ -137,11 +137,11 @@ class simulator:
 
     #simulates the liquid pumps
     def handle_liquids(self, dt):
-    """
-    simulation of the sirup pump if the sirup pump is on(True) and sirup valve is off(False) then
-    afther 3 seconds the sirup flow will start, when the pump is turnd off(False) and thare was a flow of sirup(so the pump was on for 3 sec)
-    than if the sirup valve is opend the flow is stopd else if the sirup valve is not opend the flow will stop afther 20 seconds
-    """
+        """
+        simulation of the sirup pump if the sirup pump is on(True) and sirup valve is off(False) then
+        afther 3 seconds the sirup flow will start, when the pump is turnd off(False) and thare was a flow of sirup(so the pump was on for 3 sec)
+        than if the sirup valve is opend the flow is stopd else if the sirup valve is not opend the flow will stop afther 20 seconds
+        """
         sirup_stream = 0
         if self.sirup_pump_state == True and self.sirup_valve_state == False:
             if (time.time() - self.sirup_pump_time)>3:
@@ -157,17 +157,12 @@ class simulator:
                     self.sirup_pump_running = False
                 else:
                     sirup_stream = 1 * self.multiplier * dt
-        #todo: chek to see if this else statement is still needed
-        else:
-            if self.sirup_pump_running:
-                sirup_stream = 0
-                self.sirup_pump_running = False
 
- """
-simulation of the water pump if the water pump is on(True) and water valve is off(False) then
-afther 3 seconds the water flow will start, when the pump is turnd off(False) and thare was a flow of water(so the pump was on for 3 sec)
-than if the water valve is opend the flow is stopd else if the water valve is not opend the flow will stop afther 20 seconds
-"""
+        """
+        simulation of the water pump if the water pump is on(True) and water valve is off(False) then
+        afther 3 seconds the water flow will start, when the pump is turnd off(False) and thare was a flow of water(so the pump was on for 3 sec)
+        than if the water valve is opend the flow is stopd else if the water valve is not opend the flow will stop afther 20 seconds
+        """
         water_stream = 0
         if self.water_pump_state == True and self.water_valve_state == False:
             if (time.time() - self.water_pump_time)>3:
@@ -183,11 +178,6 @@ than if the water valve is opend the flow is stopd else if the water valve is no
                     self.water_pump_running = False
                 else:
                     water_stream = 1 * self.multiplier * dt
-        #todo: chek to see if this else statement is still needed its the same as in the sirup part
-        else:
-            if self.water_pump_running:
-                water_stream = 0
-                self.water_pump_running = False
 
         self.liquid_level += sirup_stream + water_stream
 
