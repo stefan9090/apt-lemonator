@@ -14,3 +14,5 @@ set(CMAKE_CXX_FLAGS "-fdata-sections -ffunction-sections -DBMPTK_TARGET_native")
 
 add_subdirectory(pybind11)
 pybind11_add_module(lemonator python-interface/main.cpp ${LIBRARY_SOURCES})
+
+add_executable(lemonator-program src/main.cpp ${LIBRARY_SOURCES})
