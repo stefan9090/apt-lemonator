@@ -6,19 +6,27 @@ from pygame.locals import *
 
 import threading
 
+"""
+Creates a second thread to run the given simulator in, this makes it so the gui and simulation works even if the main thread is waiting for an event or time delay
+"""
 class simulator_thread(threading.Thread):
+    # Initialize the thread  and save the simulator to use
     def __init__(self, threadID, name, simulator):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
         self.simulator = simulator
 
+    # Runs the thread where the gui and simulator get updated
     def run(self):
         while True:
             self.simulator.simulator.update()
             self.simulator.update()
-
+"""
+Creates a gui for the simulator which holds all the grapical elements and handles keypad input
+"""
 class simulator_gui(object):
+    # Initializes pygame and creates the various elements of the simulator
     def __init__(self, simulator):
         pygame.init()
 
@@ -44,12 +52,15 @@ class simulator_gui(object):
         self.thread = simulator_thread(1, "simulator-thread", self)
         self.thread.start()
 
+    # Sets the yellow led to on or off
     def set_yellow_led(self, value):
         self.leds["yellow"] = value
 
+    # Sets the yellow led to on or off
     def set_green_led(self, value):
         self.leds["green"] = value
 
+    # Waits untill the gui thread received a keypad input and then returns the value of the keypad
     def get_keypad(self):
         while self.key == None:
             time.sleep(0.02)
@@ -58,6 +69,7 @@ class simulator_gui(object):
         self.key = None
         return key
 
+    # Renders a tank on the gui at the given position with a color and filled with value as a percentage
     def draw_tank(self, x, y, color, value):
         pygame.draw.rect(self.screen, (0, 0, 0), (x, y, 1, 130))
         pygame.draw.rect(self.screen, (0, 0, 0), (x + 49, y, 1, 130))
@@ -68,6 +80,7 @@ class simulator_gui(object):
 
         self.screen.blit(self.font.render("%3.1f %%" % (value,), 1, (0, 0, 0)), (x, y + 130))
 
+    # Renders the heater at the given position
     def draw_heater(self, x, y):
         if self.simulator.heater_state:
             pygame.draw.rect(self.screen, (255, 255, 0), (x, y, 60, 10))
@@ -76,6 +89,7 @@ class simulator_gui(object):
 
         self.screen.blit(self.font.render("%3.1f mC" % (self.simulator.read_real_temp(),), 1, (0, 0, 0)), (x, y + 10))
 
+    # Renders the keypad on the given location
     def draw_keypad(self, x, y):
         for i in range(len(self.buttons)):
             color = (0, 162, 230)
@@ -84,15 +98,18 @@ class simulator_gui(object):
             pygame.draw.rect(self.screen, color, (x + (i % 4 * 70), y + (i // 4 * 70), 64, 64))
             self.screen.blit(self.button_font.render(self.buttons[i], 1, (255, 255, 255)), (x + (i % 4 * 70) + 15, y + (i // 4 * 70) + 10))
 
+    # Checks for keypad input with they keypad at x, y and pos the mouse position
     def handle_keypad(self, x, y, pos):
         mx, my = pos
         for i in range(len(self.buttons)):
             if mx >=  x + (i % 4 * 70) and mx <= x + (i % 4 * 70) + 64 and my >= y + (i // 4 * 70) and my <= y + (i // 4 * 70) + 64:
                 self.handle_button(self.buttons[i])
 
+    # Callback for if a button on the keypad is pressed
     def handle_button(self, button):
         self.key = button
 
+    # Draws a led with color at the given position
     def draw_led(self, x, y, color, value):
         pygame.draw.circle(self.screen, (0, 0, 0), (x + 5, y + 1), 10)
         if value:
@@ -101,11 +118,13 @@ class simulator_gui(object):
             r, g, b = color
             pygame.draw.circle(self.screen, (r // 2, g // 2, b // 2), (x + 5, y + 1), 9)
 
+    # Draws the lcd on the given position
     def draw_lcd(self, x, y):
         pygame.draw.rect(self.screen, (48, 136, 32), (x, y, 350, 80))
         self.screen.blit(self.font.render(self.lcd_text1, 1, (0, 0, 0)), (x + 10, y + 10))
         self.screen.blit(self.font.render(self.lcd_text2, 1, (0, 0, 0)), (x + 10, y + 50))
 
+    # Draws a toggle switch at the given position to remove or place the cup
     def draw_toggle_switch(self, x, y):
         color = (255, 0, 0)
         if (self.simulator.cup_present):
@@ -119,6 +138,7 @@ class simulator_gui(object):
             pygame.draw.rect(self.screen, (0, 0, 0), (x, y, 20, 20))
             pygame.draw.rect(self.screen, (200, 200, 200), (x + 1, y + 1, 18, 18))
 
+    # Checks if the toggle switch has been pressed and updates the cup present in the simulator
     def handle_toggle_switch(self, x, y, pos):
         mx, my = pos
         if mx >= x and mx <= x + 60 and my >= y and my <= y + 20:
@@ -126,6 +146,7 @@ class simulator_gui(object):
             if not self.simulator.get_cup():
                 self.simulator.set_liquids_level(0)
 
+    # Handle GUI Events and render a frame
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT: os._exit(0)
