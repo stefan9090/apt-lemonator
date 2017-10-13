@@ -6,7 +6,25 @@
 #include <chrono>
 #include <thread>
 
+
+#define simulator
+#ifdef simulator
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include "pybind11/embed.h"
+#include "pybind11/pybind11.h"
+#pragma GCC diagnostic pop
+#include "../cpp-interface/simulator-interface.hpp"
+
+static lemonator_simulator hw = lemonator_simulator();
+
+#endif //simulator
+
+#ifndef simulator
 static lemonator_proxy hw  = lemonator_proxy(24, 1, 0);
+#endif
+
 static bool heater = false;
 
 static int empty_cup = 89;
