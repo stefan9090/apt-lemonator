@@ -17,12 +17,12 @@
 #pragma GCC diagnostic pop
 #include "../cpp-interface/simulator-interface.hpp"
 
-static lemonator_simulator hw = lemonator_simulator();
-
 #endif //simulator
 
 #ifndef simulator
-static lemonator_proxy hw  = lemonator_proxy(24, 1, 0);
+#define lemonator lemonator_proxy
+#else
+#define lemonator lemonator_simulator
 #endif
 
 static bool heater = false;
@@ -37,7 +37,7 @@ void wait_ms(int delay) {
 }
 
 
-void keep_temp(int d,int temp) {
+void keep_temp(lemonator& hw, int d,int temp) {
 
     float timer = 0;
     while(timer < d){
@@ -59,7 +59,7 @@ int calculate_sirup_level(float sirup_value, float water_value){
 }
 
 
-void fill_cup(int sirup_value, int water_value){
+void fill_cup(lemonator& hw, int sirup_value, int water_value){
 
     hw.sirup_pump.set(1);
     hw.sirup_valve.set(0);
@@ -69,14 +69,14 @@ void fill_cup(int sirup_value, int water_value){
     int sirup_level = calculate_sirup_level(sirup_value, water_value);
 
     while(hw.distance.read_mm() > sirup_level){
-        keep_temp(0.2, 22000);
+        keep_temp(hw, 0.2, 22000);
     }
 
     hw.sirup_pump.set(0);
     hw.sirup_valve.set(1);
 
     while(hw.distance.read_mm() > full_cup){
-        keep_temp(0.2, 22000);
+        keep_temp(hw, 0.2, 22000);
     }
 
     hw.water_pump.set(0);
@@ -89,25 +89,40 @@ void fill_cup(int sirup_value, int water_value){
 
 int main(int argc, char* argv[]){
     std::cout << "C++ Program Running" << std::endl;
+
+#ifndef simulator
+    lemonator_proxy hw = lemonator_proxy(24, 1, 0);
+#else
+    Py_Initialize();
+    wchar_t wstr[32];
+    wchar_t* args = {wstr};
+    std::mbstowcs(wstr, "lemonator", 9);
+    PySys_SetArgv(1, &args);
+
+    lemonator_simulator hw = lemonator_simulator();
+
+    Py_Finalize();
+#endif
+
     hwlib::wait_ms(1);
 
     while(true){
         char keypad_input = hw.keypad.getc();
 
         if(keypad_input == 'A'){
-            fill_cup(1, 10);
+            fill_cup(hw, 1, 10);
         }
 
         if(keypad_input == 'B'){
-            fill_cup(2, 10);
+            fill_cup(hw, 2, 10);
         }
 
         if(keypad_input == 'C'){
-            fill_cup(1, 20);
+            fill_cup(hw, 1, 20);
         }
 
         if(keypad_input == 'D'){
-            fill_cup(1, 3);
+            fill_cup(hw, 1, 3);
         }
     }
 

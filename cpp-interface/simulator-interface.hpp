@@ -18,27 +18,27 @@ public:
     output_simulator(py::object & lemonator_obj, std::string output):
         output_obj(lemonator_obj.attr(output.c_str()))
     {}
-    
+
     void set(bool b, hwlib::buffering buf = hwlib::buffering::unbuffered){
         output_obj.attr("set")(b);
     }
 };
 
-class sensor_simulator : 
-    public hwlib::sensor_temperature, 
-    public hwlib::sensor_distance, 
+class sensor_simulator :
+    public hwlib::sensor_temperature,
+    public hwlib::sensor_distance,
     public hwlib::sensor_rgb,
     public hwlib::istream,
     public hwlib::pin_in
 {
 private:
     py::object sensor_obj;
-    
+
 public:
     sensor_simulator(py::object & lemonator_obj, std::string sensor):
         sensor_obj(lemonator_obj.attr(sensor.c_str()))
     {}
-    
+
     int read_mc()override{
         return py::int_(sensor_obj.attr("read_mc")());
     }
@@ -59,8 +59,8 @@ public:
         return py::int_(sensor_obj.attr("getc")());
     }
     bool get(
-        hwlib::buffering buf = hwlib::buffering::unbuffered    
-        )override{  
+        hwlib::buffering buf = hwlib::buffering::unbuffered
+        )override{
         return py::bool_(sensor_obj.attr("get")());
     }
 };
@@ -68,15 +68,15 @@ public:
 class filler_simulator {
 public:
     output_simulator & pump;
-    output_simulator & valve;	
+    output_simulator & valve;
     filler_simulator(output_simulator & pump, output_simulator & valve):
-        pump(pump), 
+        pump(pump),
         valve(valve)
-    {}	  
+    {}
 };
 
-class lcd_dummy : public hwlib::ostream {	
-public:   
+class lcd_dummy : public hwlib::ostream {
+public:
     void putc( char c ){
         std::cout<<"c";
     }
@@ -84,17 +84,16 @@ public:
 
 class lemonator_simulator : public lemonator_interface{
 public:
-    py::scoped_interpreter guard;
     py::object lemonator;
     py::object lemonator_obj;
     lcd_dummy lcd;
-    
+
     sensor_simulator keypad;
     sensor_simulator distance;
     sensor_simulator color;
     sensor_simulator temperature;
     sensor_simulator reflex;
-   
+
     output_simulator heater;
     output_simulator sirup_pump;
     output_simulator sirup_valve;
@@ -123,7 +122,6 @@ public:
             led_green,
             led_yellow
             ),
-        guard{},
         lemonator(py::module::import("lemonator")),
         lemonator_obj(lemonator.attr("lemonator")),
         lcd(),
@@ -142,5 +140,7 @@ public:
         led_yellow(lemonator_obj, "led_yellow"),
         sirup(sirup_pump, sirup_valve),
         water(water_pump, water_valve)
-    {}   
+    {
+
+    }
 };
