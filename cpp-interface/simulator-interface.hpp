@@ -57,7 +57,8 @@ public:
         */
     }
     char getc()override{
-        return py::chr(sensor_obj.attr("getc")());
+        std::string s = py::str(sensor_obj.attr("getc")());
+        return s.c_str()[0];
     }
 
     bool get(
@@ -76,14 +77,7 @@ public:
         valve(valve)
     {}
 };
-/*
-class lcd_dummy : public hwlib::ostream {
-public:
-    void putc( char c ){
-        std::cout<<"c";
-    }
-};
-*/
+
 class lemonator_simulator : public lemonator_interface{
 public:
     py::object lemonator;
