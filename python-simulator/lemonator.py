@@ -43,7 +43,6 @@ class lemonator(object):
         self.water_valve = output_dummy(self.simulator.set_water_valve)
 
         self.keypad = sensor_dummy(self.gui.get_keypad)
-        self.get = sensor_dummy(self.simulator.get_cup)
+        self.reflex = sensor_dummy(self.simulator.get_cup)
         self.temperature = sensor_dummy(self.simulator.read_temp)
         self.distance = sensor_dummy(self.simulator.read_mm)
-

@@ -8,6 +8,7 @@
 #pragma GCC diagnostic pop
 
 #include "lemonator_interface.hpp"
+#include "lemonator_dummy.hpp"
 
 namespace py = pybind11;
 
@@ -56,8 +57,9 @@ public:
         */
     }
     char getc()override{
-        return py::int_(sensor_obj.attr("getc")());
+        return py::chr(sensor_obj.attr("getc")());
     }
+
     bool get(
         hwlib::buffering buf = hwlib::buffering::unbuffered
         )override{
@@ -74,14 +76,14 @@ public:
         valve(valve)
     {}
 };
-
+/*
 class lcd_dummy : public hwlib::ostream {
 public:
     void putc( char c ){
         std::cout<<"c";
     }
 };
-
+*/
 class lemonator_simulator : public lemonator_interface{
 public:
     py::object lemonator;
@@ -90,7 +92,7 @@ public:
 
     sensor_simulator keypad;
     sensor_simulator distance;
-    sensor_simulator color;
+    sensor_dummy color;
     sensor_simulator temperature;
     sensor_simulator reflex;
 
@@ -105,7 +107,7 @@ public:
     filler_simulator sirup;
     filler_simulator water;
 
-    lemonator_simulator():
+    lemonator_simulator(int port):
         lemonator_interface(
             lcd,
             keypad,
@@ -123,11 +125,11 @@ public:
             led_yellow
             ),
         lemonator(py::module::import("lemonator")),
-        lemonator_obj(lemonator.attr("lemonator")),
+        lemonator_obj(lemonator.attr("lemonator")(port)),
         lcd(),
         keypad(lemonator_obj, "keypad"),
         distance(lemonator_obj, "distance"),
-        color(lemonator_obj, "color"),
+        color(),
         temperature(lemonator_obj, "temperature"),
         reflex(lemonator_obj, "reflex"),
 
@@ -141,6 +143,5 @@ public:
         sirup(sirup_pump, sirup_valve),
         water(water_pump, water_valve)
     {
-
     }
 };

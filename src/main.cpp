@@ -99,15 +99,14 @@ int main(int argc, char* argv[]){
     std::mbstowcs(wstr, "lemonator", 9);
     PySys_SetArgv(1, &args);
 
-    lemonator_simulator hw = lemonator_simulator();
-
-    Py_Finalize();
+    lemonator_simulator hw = lemonator_simulator(24);
 #endif
-
     hwlib::wait_ms(1);
 
     while(true){
         char keypad_input = hw.keypad.getc();
+
+        std::cout << keypad_input << std::endl;
 
         if(keypad_input == 'A'){
             fill_cup(hw, 1, 10);
@@ -125,6 +124,8 @@ int main(int argc, char* argv[]){
             fill_cup(hw, 1, 3);
         }
     }
+
+    Py_Finalize();
 
     return 0;
 }
