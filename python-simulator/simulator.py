@@ -53,8 +53,8 @@ class simulator:
         self.cup_present = value
 
     #set te current liquid_level in the cup
-    def set_liquids_level(self, value):
-        self.liquid_level = 0
+    def set_liquids_level(self, value=0):
+        self.liquid_level = value
 
     #turns the heater on or of depending on the bool value given
     def set_heater(self, value):
@@ -108,8 +108,8 @@ class simulator:
 
     #returns the last cashed value of the heater only updates ones every 800ms
     def read_temp(self):
-        if self.delayed_temp_mc>70000:
-            return 70000 - 700 #sensor offset
+        if self.delayed_temp_mc>70700:
+            return 70000 #sensor offset
         return self.delayed_temp_mc - 700 #sensor offset
 
     #the actual temp value the function ignores the 800ms read out delay
@@ -118,11 +118,10 @@ class simulator:
 
     #simulates the temperature if heater on temp up temp down if heater off
     def handle_temperature(self, dt):
-        if self.cup_present == True:
-            if self.heater_state == False and self.temp_mc>20000:
-                self.temp_mc -= 1 * self.multiplier * dt
-            elif self.heater_state == True and self.temp_mc<100000:
-                self.temp_mc += 10 * self.multiplier * dt
+        if self.heater_state == False and self.temp_mc>20000:
+            self.temp_mc -= 1 * self.multiplier * dt
+        elif self.heater_state == True and self.temp_mc<100000 and self.get_cup() == True:
+            self.temp_mc += 10 * self.multiplier * dt
 
     #simulates the height sensor includes the random miss read values
     def read_mm(self):

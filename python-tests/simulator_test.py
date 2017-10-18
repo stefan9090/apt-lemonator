@@ -156,7 +156,7 @@ class simulator_test(TestCase):
         sim.water_pump_off()
         sim.set_heater(0)
 
-        self.assertEqual(sim.read_real_temp(), 20000, "pumps turned on while no cup present")
+        self.assertEqual(sim.read_real_temp(), 20000, "heater turned on while no cup present")
         self.assertEqual(sim.liquid_level, 0, "pumps turned on while no cup present")
 
         sim.cup_present = True
@@ -175,6 +175,29 @@ class simulator_test(TestCase):
         self.assertGreater(sim.read_real_temp(), 20000, "heater did not turn on while cup present")
         self.assertNotEqual(sim.liquid_level, 0, "pumps did not turn on while cup present")
 
+    def test_set_cup(self):
+        sim = simulator.simulator() 
+        sim.set_cup(0)
+        self.assertEqual(sim.get_cup(), False, "get_cup returned wrong value")
+
+    def test_set_liquids_level(self):
+        sim = simulator.simulator() 
+        sim.set_liquids_level(10)
+        self.assertEqual(sim.liquid_level, 10, "setting liquid level failed")
+
+    def test_temp_sensor_lim(self):
+        sim = simulator.simulator() 
+        sim.temp_mc = 80000
+
+        current_time = 0
+        last_time = time.time()
+
+        sim.set_heater(1)
+        while not (current_time - last_time)>1:
+            current_time = time.time()
+            sim.update()
+        
+        self.assertEqual(sim.read_temp(), 70000, "read_temp returned wrong value")
         
 simTester = simulator_test()
 suite = TestLoader().loadTestsFromModule(simTester)
