@@ -118,10 +118,11 @@ class simulator:
 
     #simulates the temperature if heater on temp up temp down if heater off
     def handle_temperature(self, dt):
-        if self.heater_state == False and self.temp_mc>20000:
-            self.temp_mc -= 1 * self.multiplier * dt
-        elif self.heater_state == True and self.temp_mc<100000:
-            self.temp_mc += 10 * self.multiplier * dt
+        if self.cup_present == True:
+            if self.heater_state == False and self.temp_mc>20000:
+                self.temp_mc -= 1 * self.multiplier * dt
+            elif self.heater_state == True and self.temp_mc<100000:
+                self.temp_mc += 10 * self.multiplier * dt
 
     #simulates the height sensor includes the random miss read values
     def read_mm(self):
@@ -203,21 +204,3 @@ class simulator:
             self.delayed_temp_mc = self.temp_mc
             self.temp_delay_timer = current_time
 
-#only for debug purpuse
-if __name__=="__main__":
-    sim = simulator()
-
-    delay_time = 0.013
-    last_time = time.time()
-
-    sim.sirup_pump_on()
-    sim.water_pump_on()
-    sim.heater_on()
-
-    while(True):
-        sim.update()
-        current_time = time.time()
-        #if(current_time - last_time)>1:
-        sim.log()
-        #    last_time = current_time
-        time.sleep(0.1)
