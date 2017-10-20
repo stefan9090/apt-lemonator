@@ -103,6 +103,7 @@ int main(int argc, char* argv[]){
     lemonator_simulator hw = lemonator_simulator(24);
 #endif
     hwlib::wait_ms(3000);
+    std::cout << "Waiting for input" << std::endl;
 
     while(true){
         char keypad_input = hw.keypad.getc();
