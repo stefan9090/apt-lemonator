@@ -7,3 +7,6 @@
 [submodule "hwlib"]
 	path = hwlib
 	url = https://github.com/wovo/hwlib.git
+[submodule "Catch"]
+	path = Catch
+	url = https://github.com/philsquared/Catch.git
