@@ -128,7 +128,7 @@ class simulator_test(TestCase):
         self.assertGreater(is_equal, 0, "need to have correct readings")
         self.assertGreater(is_not_equal, 0, "need to have incorrect readings")
 
-    def test_heater(self):
+    def test_temp_sensor_offset(self):
         sim = simulator.simulator()
         current_time = 0
         last_time = time.time()
