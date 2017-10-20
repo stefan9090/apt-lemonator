@@ -21,6 +21,7 @@ def keep_temp(d, temp):
             heater = False
             hw.heater.set(0)
 
+#calculates sirup water ratio 
 def calculate_sirup_level(sirup_value, water_value):
     return empty_cup - (empty_cup - full_cup) * (1 / (sirup_value + water_value)) * sirup_value * 2
 

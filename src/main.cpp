@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 
+#include "main.hpp"
 
 #define simulator
 #ifdef simulator
@@ -55,7 +56,7 @@ void keep_temp(lemonator& hw, int d,int temp) {
 }
 
 int calculate_sirup_level(float sirup_value, float water_value){
-    return empty_cup - (empty_cup - full_cup) * (sirup_value / (sirup_value + water_value)) * sirup_value * 2;
+    return empty_cup - (empty_cup - full_cup) * (1 / (sirup_value + water_value)) * sirup_value * 2;
 }
 
 
@@ -86,7 +87,7 @@ void fill_cup(lemonator& hw, int sirup_value, int water_value){
     heater = true;
 }
 
-
+#ifndef testing
 int main(int argc, char* argv[]){
     std::cout << "C++ Program Running" << std::endl;
 
@@ -101,7 +102,7 @@ int main(int argc, char* argv[]){
 
     lemonator_simulator hw = lemonator_simulator(24);
 #endif
-    hwlib::wait_ms(1);
+    hwlib::wait_ms(3000);
 
     while(true){
         char keypad_input = hw.keypad.getc();
@@ -129,3 +130,4 @@ int main(int argc, char* argv[]){
 
     return 0;
 }
+#endif //testing
